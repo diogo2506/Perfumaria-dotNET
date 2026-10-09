@@ -1,0 +1,116 @@
+@Perfumaria.API_HostAddress = http://localhost:5169
+
+### Health check
+GET {{Perfumaria.API_HostAddress}}/health
+Accept: application/json
+
+### Listar categorias
+GET {{Perfumaria.API_HostAddress}}/api/categorias
+Accept: application/json
+
+### Criar categoria
+POST {{Perfumaria.API_HostAddress}}/api/categorias
+Content-Type: application/json
+
+{
+  "nome": "Perfumaria Feminina",
+  "descricao": "Fragrâncias femininas de todas as concentrações"
+}
+
+### Listar produtos — sem versão (cai na 2.0, envelope paginado)
+GET {{Perfumaria.API_HostAddress}}/api/produtos?page=1&pageSize=2
+Accept: application/json
+
+### Listar produtos — v1 explícita por query string (array simples, deprecada)
+GET {{Perfumaria.API_HostAddress}}/api/produtos?api-version=1.0
+Accept: application/json
+
+### Listar produtos — v1 explícita por header (mesmo contrato acima)
+GET {{Perfumaria.API_HostAddress}}/api/produtos
+X-Api-Version: 1.0
+Accept: application/json
+
+### Paginação — page inválido (deve retornar 400 em ProblemDetails)
+GET {{Perfumaria.API_HostAddress}}/api/produtos?page=0&pageSize=20
+Accept: application/json
+
+### Paginação — pageSize fora do teto (deve retornar 400 em ProblemDetails)
+GET {{Perfumaria.API_HostAddress}}/api/produtos?page=1&pageSize=9999
+Accept: application/json
+
+### Paginação — página além do total (200 com items vazio, não é erro)
+GET {{Perfumaria.API_HostAddress}}/api/produtos?page=9999&pageSize=20
+Accept: application/json
+
+### Buscar produto por id inexistente (deve retornar 404 em ProblemDetails)
+GET {{Perfumaria.API_HostAddress}}/api/produtos/00000000-0000-0000-0000-000000000000
+Accept: application/json
+
+### Criar produto
+POST {{Perfumaria.API_HostAddress}}/api/produtos
+Content-Type: application/json
+
+{
+  "nome": "Aurora Eau de Parfum",
+  "descricao": "Fragrância floral amadeirada",
+  "codigoSku": "SKU-001",
+  "precoVenda": 289.90,
+  "volumeMl": 100,
+  "tipoFragancia": "Floral",
+  "notaOlfativa": "Jasmim, Baunilha e Almíscar",
+  "categoriaId": 1,
+  "fabricanteId": 1
+}
+
+### Criar cliente
+POST {{Perfumaria.API_HostAddress}}/api/clientes
+Content-Type: application/json
+
+{
+  "nome": "Maria Silva",
+  "cpfCnpj": "123.456.789-00",
+  "email": "maria.silva@example.com",
+  "telefone": "(11) 98888-7777",
+  "endereco": "Rua das Flores, 123"
+}
+
+### Criar pedido
+POST {{Perfumaria.API_HostAddress}}/api/pedidos
+Content-Type: application/json
+
+{
+  "clienteId": "00000000-0000-0000-0000-000000000000",
+  "observacoes": "Entrega expressa",
+  "itens": [
+    { "produtoId": "00000000-0000-0000-0000-000000000000", "quantidade": 2, "descontoPercentual": 10 }
+  ]
+}
+
+### Payload inválido — deve retornar 400 em ProblemDetails
+POST {{Perfumaria.API_HostAddress}}/api/produtos
+Content-Type: application/json
+
+{
+  "nome": "",
+  "codigoSku": "",
+  "precoVenda": -5
+}
+
+### Rate limit — repita esta chamada 11+ vezes em menos de 1 minuto;
+### a partir da 11ª, espera-se 429 com header Retry-After e corpo JSON
+POST {{Perfumaria.API_HostAddress}}/api/produtos
+Content-Type: application/json
+
+{
+  "nome": "Teste de Rate Limit",
+  "codigoSku": "SKU-RATE-LIMIT",
+  "precoVenda": 99.90,
+  "volumeMl": 50,
+  "tipoFragancia": "Citrico",
+  "categoriaId": 1,
+  "fabricanteId": 1
+}
+
+### GET /health continua 200 mesmo depois do 429 acima (fora do teto de taxa)
+GET {{Perfumaria.API_HostAddress}}/health
+Accept: application/json

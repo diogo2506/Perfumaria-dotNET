@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="Perfumaria.API/Perfumaria.API.csproj" />
+  <Project Path="Perfumaria.Application/Perfumaria.Application.csproj" />
+  <Project Path="Perfumaria.Domain/Perfumaria.Domain.csproj" />
+  <Project Path="Perfumaria.Infrastructure/Perfumaria.Infrastructure.csproj" />
+  <Project Path="Perfumaria.Infrastructure.Tests/Perfumaria.Infrastructure.Tests.csproj" />
+  <Project Path="Perfumaria.Domain.Tests/Perfumaria.Domain.Tests.csproj" />
+  <Project Path="Perfumaria.Application.Tests/Perfumaria.Application.Tests.csproj" />
+</Solution>
